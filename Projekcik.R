@@ -9,12 +9,16 @@ library(corrplot)
 library(sf)
 library(spdep)
 library(tmap)
+library(sf)
+library(spdep)
+library(spatialreg)
+library(dplyr)
 
 # 2. Wczytanie i przygotowanie danych
-dane <- read_excel("Mieszkania oddane do użytku_wynagrodzenia_bezrobotni 2005-2023.xlsx")
+dane <- read_excel("Data.xlsx")
 names(dane) <- trimws(names(dane))
 dane <- dane %>%
-  select(Rok, Wojewodztwo, `liczba mieszkan`, wynagrodzenia, `liczba bezrobotnych`) %>%
+  select(ID, Rok, Wojewodztwo, `liczba mieszkan`, wynagrodzenia, `liczba bezrobotnych`) %>%
   rename(
     migracje = `liczba mieszkan`,      # zakładam że migracje to oddane mieszkania
     mieszkania = `liczba mieszkan`,
@@ -53,6 +57,13 @@ for(v in vars) {
 # 8. Wykresy rozrzutu i gęstości par zmiennych
 pairs(dane[, vars], main="Wykresy rozrzutu zmiennych")
 
+map <- st_read("wojewodztwa.shp") # .shp file with voivodships boundaries
+colnames(map)  # Checking what headers a map file has
 
+nb <- poly2nb(map)
 
+lw <- nb2listw(nb, style = "W", zero.policy=TRUE)
 
+colnames(map)    # sprawdzenie nazw kolumn w pliku .shp 
+print(map$JPT_KOD_JE)
+all.equal(map$JPT_KOD_JE, dane$ID)
