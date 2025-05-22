@@ -1,1 +1,1 @@
-~ siemano wariaty
+nowy
